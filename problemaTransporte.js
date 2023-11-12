@@ -1,5 +1,3 @@
-const fs = require('fs');
-
 const CELULA_HORIZONTAL = 0
 const CELULA_VERTICAL = 1
 
@@ -37,36 +35,41 @@ function obterValores() {
 
 class Celula {
     constructor(i, j, direcao, anterior = null) {
-      this.i = i;
-      this.j = j;
+      this.i = i
+      this.j = j
       this.direcao = direcao
-      this.anterior = anterior;
+      this.anterior = anterior
     }
   }
 
-function lerArquivo(caminho, callback) {
-    /*
-    Formato do arquivo:
-    numLinhas
-    numColunas
-    c11;c12;c13;oferta1
-    c21;c22;c23;oferta2
-    c31;c32;c33;oferta3
-    demanda1;demanda2;demanda3;-1
-    */
-    fs.readFile(caminho, 'utf8', (err, data) => {
-        if (err) {
-            console.error(err);
-            callback(err, null);
-            return;
+function gerarTabela() {
+    let linhas = document.getElementById("numOfertas").value
+    let colunas = document.getElementById("numDemandas").value
+    if(linhas === "" || colunas === "") {
+        alert("Insira valores para linha e coluna!")
+    }
+    let codigoTabela = ""
+    for(let i = 0; i <= linhas; i++) {
+        codigoTabela += "<tr>"
+        for(let j = 0; j <= colunas; j++) {
+            if (j == colunas && i == linhas) {
+                codigoTabela += "<td><input type='number' readonly value='-1'></td>"
+            } else if(i == linhas) {
+                codigoTabela += "<td><input type='number' placeholder='Demanda' required></td>"
+            } else if(j == colunas) {
+                codigoTabela += "<td><input type='number' placeholder='Oferta' required></td>"
+            } else {
+                codigoTabela += "<td><input type='number' placeholder='Custo' required></td>"
+            }
         }
-        let linhas = data.split('\n');
-        let matriz = [];
-        for (let i = 2; i < linhas.length; i++) {
-            matriz[i - 2] = linhas[i].split(';').map(Number)
-        }
-        callback(null, matriz);
-    });
+        codigoTabela += "</tr>"
+    }
+    document.getElementById("tabelaCustos").innerHTML = codigoTabela
+    document.getElementById("h2Table").style.opacity = 1;
+}
+
+function lerDados() {
+
 }
 
 function isBalanceado(matriz) {
@@ -292,7 +295,13 @@ function acharCaminho(matrizVariavel, celula) {
 }
 
 function main() {
-    lerArquivo("./input.txt", (err, matrizCusto) => {
+
+    const btnInserir = document.getElementById("btnInserir")
+    btnInserir.addEventListener("click", function() {
+        gerarTabela()
+      });
+
+   /* lerArquivo("./input.txt", (err, matrizCusto) => {
         if (err) {
             console.error(err)
         } else {
@@ -303,6 +312,6 @@ function main() {
             console.log("\n\n\n\n\n\n\n\n\n A matriz ótima: ")
             console.log(matrizOtima)
         }
-    });
+    });*/
 }
 main();
