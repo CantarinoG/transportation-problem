@@ -1,38 +1,6 @@
 const CELULA_HORIZONTAL = 0
 const CELULA_VERTICAL = 1
 
-/*function validarNumero(elemento) {
-  // Substitua o conteúdo não numérico por vazio
-  elemento.innerText = elemento.innerText.replace(/[^\d]/g, '');
-}
-
-function obterValores() {
-  // Obtendo a referência da tabela pelo ID
-  const tabela = document.getElementById("minhaTabela");
-
-  // Inicializando uma matriz vazia para armazenar os valores da tabela
-  const matrizTabela = [];
-
-  // Iterando sobre as linhas da tabela (excluindo a primeira linha que contém os cabeçalhos)
-  for (let i = 1; i < tabela.rows.length; i++) {
-    const linhaAtual = tabela.rows[i];
-    const dadosLinha = [];
-
-    // Iterando sobre as células da linha
-    for (let j = 0; j < linhaAtual.cells.length; j++) {
-      // Adicionando o valor da célula à matriz de dados da linha
-      dadosLinha.push(linhaAtual.cells[j].innerText);
-    }
-
-    // Adicionando a matriz de dados da linha à matriz geral
-    matrizTabela.push(dadosLinha);
-  }
-
-  // Exibindo a matriz no console (você pode fazer o que quiser com ela a partir daqui)
-  console.log(matrizTabela);
-}
-*/
-
 class Celula {
     constructor(i, j, direcao, anterior = null) {
       this.i = i
@@ -53,22 +21,57 @@ function gerarTabela() {
         codigoTabela += "<tr>"
         for(let j = 0; j <= colunas; j++) {
             if (j == colunas && i == linhas) {
-                codigoTabela += "<td><input type='number' readonly value='-1'></td>"
+                codigoTabela += "<td><input class='celula' type='number' readonly value='-1'></td>"
             } else if(i == linhas) {
-                codigoTabela += "<td><input type='number' placeholder='Demanda' required></td>"
+                codigoTabela += "<td><input class='celula' type='number' placeholder='Demanda' required></td>"
             } else if(j == colunas) {
-                codigoTabela += "<td><input type='number' placeholder='Oferta' required></td>"
+                codigoTabela += "<td><input class='celula' type='number' placeholder='Oferta' required></td>"
             } else {
-                codigoTabela += "<td><input type='number' placeholder='Custo' required></td>"
+                codigoTabela += "<td><input class='celula' type='number' placeholder='Custo' required></td>"
             }
         }
         codigoTabela += "</tr>"
     }
     document.getElementById("tabelaCustos").innerHTML = codigoTabela
-    document.getElementById("h2Table").style.opacity = 1;
+    document.getElementById("h2Table").style.display = "block";
+    document.getElementById("btnResolver").style.display = "block";
 }
 
 function lerDados() {
+
+    //Checar se tem valor vazio
+    let celulas = document.querySelectorAll('.celula');
+    let contemInvalido = false
+    for (let i = 0; i < celulas.length; i++) {
+        let content = celulas[i].value;
+        if (content === "") {
+            contemInvalido = true
+        } 
+    }
+
+    //Retornar matriz
+    if(contemInvalido) {
+        alert("Nenhuma célula pode ficar vazia ou com valor inválido!")
+    }else {
+
+        const tabela = document.getElementById("tabelaCustos");
+
+        const matrizTabela = [];
+        for (let i = 0; i < tabela.rows.length; i++) {
+            const linhaAtual = tabela.rows[i];
+            const dadosLinha = [];
+
+            for (let j = 0; j < linhaAtual.cells.length; j++) {
+            const input = linhaAtual.cells[j].querySelector(".celula");
+            dadosLinha.push(Number(input.value));
+            }
+
+            matrizTabela.push(dadosLinha);
+        }
+
+        return matrizTabela
+
+    }
 
 }
 
@@ -149,8 +152,8 @@ function solucaoInicial(isBalanceado, matrizCustoOriginal) {
 
 function acharIndices(matriz, valor) {
     let indices = {linha:null, coluna:null}
-    for (let i = 0; i < matriz.length; i++) {
-        for (let j = 0; j < matriz[i].length; j++) {
+    for (let i = 0; i < (matriz.length - 1); i++) {
+        for (let j = 0; j < (matriz[i].length - 1); j++) {
             if (matriz[i][j] == valor) {
                 indices.linha = i
                 indices.coluna = j
@@ -184,7 +187,7 @@ function testeOtimalidade(matrizVariavel, matrizCusto) {
                 }
             }
         }
-        console.debug(`DEBUG: Célular a checar: (${celulasAChecar[0].i},${celulasAChecar[0].j});(${celulasAChecar[1].i},${celulasAChecar[1].j});(${celulasAChecar[2].i},${celulasAChecar[2].j})...`)
+        //console.debug(`DEBUG: Célular a checar: (${celulasAChecar[0].i},${celulasAChecar[0].j});(${celulasAChecar[1].i},${celulasAChecar[1].j});(${celulasAChecar[2].i},${celulasAChecar[2].j})...`)
         let caminhos = []
         let valoresCelulas = []
         
@@ -194,6 +197,7 @@ function testeOtimalidade(matrizVariavel, matrizCusto) {
             console.debug(`DEBUG: Caminho do elemento de posição ${celulasAChecar[i].i}, ${celulasAChecar[i].j}:`)
             console.debug(caminhos[i])
             let valorCelula = 0
+            if(caminhos[0] !== undefined) {
             for(let j = 0; j < Object.keys(caminhos[i]).length; j++) {
                 if ((j % 2) == 0) {
                     valorCelula += matrizCusto[caminhos[i][j].i][caminhos[i][j].j]
@@ -203,7 +207,6 @@ function testeOtimalidade(matrizVariavel, matrizCusto) {
             }
             valoresCelulas.push({valorCelula, i: celulasAChecar[i].i, j: celulasAChecar[i].j})
             console.debug(`DEBUG: Valor da célula ${i}: ${valorCelula}`)
-        }
         console.debug("DEBUG: Valores das células:", valoresCelulas)
         let algumValorNegativo = false
         for(let i = 0; i < valoresCelulas.length; i++) {
@@ -227,7 +230,6 @@ function testeOtimalidade(matrizVariavel, matrizCusto) {
         valorASerSubstituido = Infinity
         for(let i = 0; i < Object.keys(caminhos[celulaASerColocada]).length; i++) {
             if((i % 2) != 0 && matrizVariavel[caminhos[celulaASerColocada][i].i][caminhos[celulaASerColocada][i].j] < valorASerSubstituido) {
-                console.log(caminhos[celulaASerColocada][i])
                 valorASerSubstituido = matrizVariavel[caminhos[celulaASerColocada][i].i][caminhos[celulaASerColocada][i].j]
             }
         }
@@ -243,8 +245,12 @@ function testeOtimalidade(matrizVariavel, matrizCusto) {
         }
         console.debug(`DEBUG: Matriz de variáveis depois: `)
         console.debug(matrizVariavel)
+    } else {
+        return matrizVariavel
     }
-}
+    }
+    
+}}
 
 function acharCaminho(matrizVariavel, celula) {
     let iInicial = celula.i
@@ -299,19 +305,22 @@ function main() {
     const btnInserir = document.getElementById("btnInserir")
     btnInserir.addEventListener("click", function() {
         gerarTabela()
-      });
+      })
 
-   /* lerArquivo("./input.txt", (err, matrizCusto) => {
-        if (err) {
-            console.error(err)
+    const btnResolver = document.getElementById("btnResolver")
+    btnResolver.addEventListener("click", function() {
+        let matrizCusto = lerDados()
+        if(!isBalanceado(matrizCusto)) {
+            alert("A matriz de custo não está balanceada!")
         } else {
-            console.debug(`DEBUG: Matriz de custo:`)
-            console.debug(matrizCusto)
             let matrizVariavel = solucaoInicial(isBalanceado(matrizCusto), matrizCusto)
             let matrizOtima = testeOtimalidade(matrizVariavel, matrizCusto)
-            console.log("\n\n\n\n\n\n\n\n\n A matriz ótima: ")
-            console.log(matrizOtima)
+                console.log("\n\n\n\n\n\n\n\n\n A matriz ótima: ")
+                console.log(matrizOtima)
         }
-    });*/
+
+    })
+
 }
-main();
+
+main()
