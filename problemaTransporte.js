@@ -3,6 +3,38 @@ const fs = require('fs');
 const CELULA_HORIZONTAL = 0
 const CELULA_VERTICAL = 1
 
+/*function validarNumero(elemento) {
+  // Substitua o conteúdo não numérico por vazio
+  elemento.innerText = elemento.innerText.replace(/[^\d]/g, '');
+}
+
+function obterValores() {
+  // Obtendo a referência da tabela pelo ID
+  const tabela = document.getElementById("minhaTabela");
+
+  // Inicializando uma matriz vazia para armazenar os valores da tabela
+  const matrizTabela = [];
+
+  // Iterando sobre as linhas da tabela (excluindo a primeira linha que contém os cabeçalhos)
+  for (let i = 1; i < tabela.rows.length; i++) {
+    const linhaAtual = tabela.rows[i];
+    const dadosLinha = [];
+
+    // Iterando sobre as células da linha
+    for (let j = 0; j < linhaAtual.cells.length; j++) {
+      // Adicionando o valor da célula à matriz de dados da linha
+      dadosLinha.push(linhaAtual.cells[j].innerText);
+    }
+
+    // Adicionando a matriz de dados da linha à matriz geral
+    matrizTabela.push(dadosLinha);
+  }
+
+  // Exibindo a matriz no console (você pode fazer o que quiser com ela a partir daqui)
+  console.log(matrizTabela);
+}
+*/
+
 class Celula {
     constructor(i, j, direcao, anterior = null) {
       this.i = i;
