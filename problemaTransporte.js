@@ -300,6 +300,21 @@ function acharCaminho(matrizVariavel, celula) {
     return
 }
 
+function plotaTabela(matriz) {
+    const linhas = matriz.length
+    const colunas = matriz[0].length
+    const tabela = document.getElementById("tabelaOtima")
+    let codigoTabela = ""
+    for(let i = 0; i < linhas; i++) {
+        codigoTabela += "<tr>"
+        for(let j = 0; j < colunas; j++) {
+                codigoTabela += `<td>${matriz[i][j]}</td>`
+        }
+        codigoTabela += "</tr>"
+    }
+    tabela.innerHTML = codigoTabela
+}
+
 function main() {
 
     const btnInserir = document.getElementById("btnInserir")
@@ -313,10 +328,10 @@ function main() {
         if(!isBalanceado(matrizCusto)) {
             alert("A matriz de custo não está balanceada!")
         } else {
+            document.getElementById("resultado").style.display = "flex"
             let matrizVariavel = solucaoInicial(isBalanceado(matrizCusto), matrizCusto)
             let matrizOtima = testeOtimalidade(matrizVariavel, matrizCusto)
-                console.log("\n\n\n\n\n\n\n\n\n A matriz ótima: ")
-                console.log(matrizOtima)
+            plotaTabela(matrizOtima)
         }
 
     })
